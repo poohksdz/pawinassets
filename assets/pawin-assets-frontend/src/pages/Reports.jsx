@@ -407,7 +407,7 @@ export default function Reports() {
 
                     <div className="flex items-end gap-3 h-48">
                       {(report.monthlyBorrows || []).map((m, i) => {
-                        const maxVal = Math.max(...report.monthlyBorrows.map(x => x.borrows), 1);
+                        const maxVal = Math.max(...(report.monthlyBorrows || []).map(x => x.borrows), 1);
                         return (
                           <motion.div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
                             <div className="w-full flex gap-1 items-end">
@@ -490,7 +490,7 @@ export default function Reports() {
                     </div>
                     <div className="space-y-3">
                       {(report.penaltyByUser || []).map((u, i) => {
-                        const maxPen = Math.max(...report.penaltyByUser.map(x => x.totalPenalty), 1);
+                        const maxPen = Math.max(...(report.penaltyByUser || []).map(x => x.totalPenalty), 1);
                         return (
                           <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}>
                             <div className="flex justify-between items-center mb-1.5">
