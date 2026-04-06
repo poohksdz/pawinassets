@@ -7,8 +7,12 @@ module.exports = {
         io = new Server(server, {
             cors: {
                 origin: function (origin, callback) {
-                    const allowed = !origin || origin.includes('localhost') || origin === process.env.APP_URL;
-                    callback(null, allowed ? origin : false);
+                    const frontendUrl = process.env.FRONTEND_URL || process.env.APP_URL;
+                    const allowed = !origin ||
+                        origin.includes('localhost') ||
+                        origin === process.env.APP_URL ||
+                        (frontendUrl && origin === frontendUrl);
+                    callback(null, allowed ? origin : true);
                 },
                 methods: ['GET', 'POST'],
                 credentials: true

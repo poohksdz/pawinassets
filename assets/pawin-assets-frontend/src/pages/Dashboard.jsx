@@ -107,7 +107,7 @@ export default function Dashboard({ cartItems, setCartItems }) {
 
       const historyData = resHistory.data?.history || [];
       setBorrowHistory(Array.isArray(historyData) ? historyData : []);
-      setPenaltyAmount(Number(resHistory.data?.credit || 0));
+      setPenaltyAmount(Number(resHistory.data?.penalty ?? resHistory.data?.credit ?? 0));
     } catch (err) {
       console.error(err);
     }
