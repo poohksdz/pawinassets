@@ -241,14 +241,6 @@ export default function AdminDashboard() {
   const { setTitle } = useOutletContext();
   useEffect(() => { setTitle(t.pageTitle); }, [setTitle, t.pageTitle]);
 
-  useEffect(() => {
-    const checkLang = setInterval(() => {
-      const currentLang = localStorage.getItem('lang') || 'en';
-      if (currentLang !== lang) setLang(currentLang);
-    }, 300);
-    return () => clearInterval(checkLang);
-  }, [lang]);
-
   const getImageUrl = (imgPath) => {
     if (!imgPath) return null;
     const cleanPath = String(imgPath).trim().toLowerCase();

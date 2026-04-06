@@ -179,14 +179,6 @@ export default function CreateBarcodeItem() {
         fetchDropdownData();
     }, []);
 
-    useEffect(() => {
-        const checkLang = setInterval(() => {
-            const currentLang = localStorage.getItem('lang') || 'en';
-            if (currentLang !== lang) setLang(currentLang);
-        }, 300);
-        return () => clearInterval(checkLang);
-    }, [lang]);
-
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({

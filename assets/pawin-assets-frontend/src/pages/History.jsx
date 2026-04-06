@@ -133,14 +133,6 @@ export default function History() {
   useEffect(() => { setTitle(t.pageTitle); }, [setTitle, t.pageTitle]);
 
   useEffect(() => {
-    const checkLang = setInterval(() => {
-      const currentLang = localStorage.getItem('lang') || 'en';
-      if (currentLang !== lang) setLang(currentLang);
-    }, 300);
-    return () => clearInterval(checkLang);
-  }, [lang]);
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
       if (monthRef.current && !monthRef.current.contains(event.target)) {
         setIsMonthOpen(false);

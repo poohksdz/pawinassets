@@ -38,17 +38,10 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
   const [isLoading, setIsLoading] = useState(false);
   const totalItems = cartItems.reduce((sum, item) => sum + item.borrowQty, 0);
 
-  // 🚀 ระบบแปลภาษา (ดึงจาก LocalStorage ทันที)
+  // 🚀 ระบบแปลภาษา (ฟัง storage event แทน polling ทุก 300ms)
   const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'en');
   const t = translations[lang];
 
-  useEffect(() => {
-    const checkLang = setInterval(() => {
-      const currentLang = localStorage.getItem('lang') || 'en';
-      if (currentLang !== lang) setLang(currentLang);
-    }, 300);
-    return () => clearInterval(checkLang);
-  }, [lang]);
 
   // 🚀 ฟังก์ชันช่วยโหลดรูปภาพแบบเดียวกับหน้าอื่นๆ
   const getImageUrl = (imgPath) => {
