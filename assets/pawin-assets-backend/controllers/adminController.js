@@ -18,16 +18,26 @@ const safeQuery = async (conn, sql) => {
 const getAdminStats = asyncHandler(async (req, res) => {
   const connection = await connectToDatabase();
   try {
-    const [usersData] = await safeQuery(connection, 'SELECT COUNT(*) as count FROM users');
-    const [assetsData] = await safeQuery(connection, 'SELECT COUNT(*) as count FROM tbl_product');
-    const [borrowedData] = await safeQuery(connection, "SELECT IFNULL(SUM(quantity), 0) as count FROM tbl_borrow WHERE status IN ('active', 'pending_return')");
-    const [penaltiesData] = await safeQuery(connection, 'SELECT IFNULL(SUM(penalty_fee), 0) as total FROM tbl_borrow');
+    const [usersData] = await connection.query('SELECT COUNT(*) as count FROM users');
+    const [assetsData] = await connection.query('SELECT COUNT(*) as count FROM tbl_product');
+
+    let borrowedItems = 0;
+    let penalties = 0;
+    try {
+      const [borrowedData] = await connection.query("SELECT IFNULL(SUM(quantity), 0) as count FROM tbl_borrow WHERE status IN ('active', 'pending_return')");
+      borrowedItems = Number(borrowedData[0]?.[0]?.count || 0);
+    } catch (e) {}
+
+    try {
+      const [penaltiesData] = await connection.query('SELECT IFNULL(SUM(penalty_fee), 0) as total FROM tbl_borrow');
+      penalties = Number(penaltiesData[0]?.[0]?.total || 0);
+    } catch (e) {}
 
     res.json({
       totalUsers: usersData[0]?.[0]?.count || 0,
       totalAssets: assetsData[0]?.[0]?.count || 0,
-      borrowedItems: Number(borrowedData[0]?.[0]?.count || 0),
-      penalties: Number(penaltiesData[0]?.[0]?.total || 0)
+      borrowedItems,
+      penalties
     });
   } finally {
     if (connection) connection.release();
