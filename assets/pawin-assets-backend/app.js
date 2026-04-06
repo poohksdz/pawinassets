@@ -40,10 +40,10 @@ const loginLimiter = rateLimit({
 });
 app.use('/api/users/login', loginLimiter);
 
-// จำกัด API ทั่วไป: 100 ครั้งต่อ 1 นาที
+// จำกัด API ทั่วไป: 1000 ครั้งต่อ 15 นาที (ผ่อนผันสำหรับ SPA ที่เรียกหลาย endpoint พร้อมกัน)
 const apiLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000,
+  max: 2000,
   message: { message: 'คำขอมากเกินไป กรุณารอสักครู่' },
   standardHeaders: true,
   legacyHeaders: false,
