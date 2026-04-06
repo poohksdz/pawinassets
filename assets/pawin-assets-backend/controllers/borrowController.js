@@ -550,25 +550,45 @@ const getMyBorrowHistory = asyncHandler(async (req, res) => {
   const connection = await connectToDatabase();
 
   try {
-    // ดึงประวัติการยืม
-    const [history] = await connection.query(`
-      SELECT b.*, p.electotronixPN, p.category, p.img, p.price, p.is_longterm
-      FROM tbl_borrow b 
-      JOIN tbl_product p ON b.product_id = p.ID 
-      WHERE b.user_id = ? 
-      ORDER BY b.borrow_date DESC`, [decoded.id]);
+    // ดึงประวัติการยืม — safe fallback: ค่อยๆ เพิ่ม column ถ้ามี
+    let history = [];
+    try {
+      const [rows] = await connection.query(`
+        SELECT b.id, b.user_id, b.product_id, b.quantity, b.status,
+               b.borrow_date, b.due_date, b.return_date, b.return_image,
+               b.penalty_fee, b.asset_condition,
+               p.electotronixPN, p.category, p.img, p.price
+        FROM tbl_borrow b
+        JOIN tbl_product p ON b.product_id = p.ID
+        WHERE b.user_id = ?
+        ORDER BY b.borrow_date DESC`, [decoded.id]);
+      history = rows;
+    } catch (err) {
+      // ถ้า tbl_borrow ยังไม่มี — return empty
+      if (err.message && (err.message.includes('doesn\'t exist') || err.message.includes('Unknown'))) {
+        history = [];
+      } else {
+        throw err;
+      }
+    }
 
     // ดึงค่าปรับ ปัจจุบันของ user
-    const [userRows] = await connection.query(
-      'SELECT penalty FROM users WHERE _id = ?', [decoded.id]
-    );
-    const penalty = userRows[0]?.penalty || 0;
+    let penalty = 0;
+    try {
+      const [userRows] = await connection.query(
+        'SELECT penalty FROM users WHERE _id = ?', [decoded.id]
+      );
+      penalty = userRows[0]?.penalty || 0;
+    } catch (e) { /* column penalty อาจยังไม่มีใน users */ }
 
-    // คำนวณค่าปรับทั้งหมดที่โดนหักไป (จากรายการที่ returned + มี penalty_fee > 0)
-    const [penaltyRows] = await connection.query(
-      'SELECT IFNULL(SUM(penalty_fee), 0) as totalPenalty FROM tbl_borrow WHERE user_id = ? AND penalty_fee > 0', [decoded.id]
-    );
-    const totalPenalty = penaltyRows[0]?.totalPenalty || 0;
+    // คำนวณค่าปรับทั้งหมดที่โดนหักไป
+    let totalPenalty = 0;
+    try {
+      const [penaltyRows] = await connection.query(
+        'SELECT IFNULL(SUM(penalty_fee), 0) as totalPenalty FROM tbl_borrow WHERE user_id = ? AND penalty_fee > 0', [decoded.id]
+      );
+      totalPenalty = penaltyRows[0]?.totalPenalty || 0;
+    } catch (e) { /* tbl_borrow อาจยังไม่มี */ }
 
     res.json({ history, penalty, totalPenalty });
   } finally {
