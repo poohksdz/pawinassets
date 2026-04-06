@@ -1,0 +1,1 @@
+ID, img, value, description, category, subcategory, weight, quantity, position, electotronixPN, manufacture, manufacturePN, supplier, supplierPN, process, footprint, alternative, link, moq, spq, price, date, time, note, username, is_longterm, isStarred, starRating, lastStarredAt, lastUnstarredAt, lastStarredBy, lastUnstarredBy, starExpirationAlertSent

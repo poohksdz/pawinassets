@@ -1,0 +1,101 @@
+/* 🌟 Google Fonts: Inter & Montserrat 🌟 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:wght@700;800;900&display=swap');
+
+/* 1. เรียกใช้งานเครื่องมือของ Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* 🚀 2. บอก Tailwind v4 ว่า "ถ้าฉันกดปุ่มให้มีคลาส .dark โผล่มา ให้เปลี่ยนสีเป็นโหมดมืดซะ!" */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --primary: #f97316;
+  /* Orange 500 */
+  --primary-hover: #ea580c;
+  /* Orange 600 */
+  --bg-light: #f1f5f9;
+  /* Slate 100 — deeper than Slate 50 for better card contrast */
+  --bg-dark: #020617;
+  /* Slate 950 */
+  --card-light: rgba(255, 255, 255, 0.95);
+  --card-dark: rgba(15, 23, 42, 0.8);
+  --border-light: rgba(203, 213, 225, 0.7);
+  /* Slate 300 at 70% — more visible borders */
+  --border-dark: rgba(30, 41, 59, 0.5);
+}
+
+/* 3. ตั้งค่าฟอนต์พื้นฐาน */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* 🌟 Global Selection & Scrollbar 🌟 */
+::selection {
+  background-color: rgba(249, 115, 22, 0.3);
+  color: #f97316;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.2);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* 🎭 Glassmorphism Utilities */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: var(--card-light);
+  border: 1px solid var(--border-light);
+}
+
+.dark .glass {
+  background: var(--card-dark);
+  border: 1px solid var(--border-dark);
+}
+
+/* 🌟 Enhanced Animations 🌟 */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
