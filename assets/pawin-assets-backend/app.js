@@ -22,14 +22,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const app = express();
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // อนุญาต: ไม่มี origin (เช่น Postman), localhost ทุก port, และ APP_URL
-    const allowed = !origin ||
-      origin.includes('localhost') ||
-      origin === process.env.APP_URL ||
-      origin === process.env.FRONTEND_URL;
-    callback(null, allowed ? origin : true);
-  },
+  origin: true,
   credentials: true
 }));
 app.use(express.json());
