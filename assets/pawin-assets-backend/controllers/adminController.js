@@ -318,6 +318,77 @@ const cleanupOldData = asyncHandler(async (req, res) => {
   }
 });
 
+// 13. รายงานสรุปข้อมูลสำหรับ Admin
+const getAdminReport = asyncHandler(async (req, res) => {
+  const connection = await connectToDatabase();
+  try {
+    const { dateFrom, dateTo } = req.query;
+
+    // Summary
+    const [assetsData] = await safeQuery(connection, 'SELECT COUNT(*) as count FROM tbl_product');
+    const [borrowData] = await safeQuery(connection,
+      "SELECT COUNT(*) as count FROM tbl_borrow WHERE status IN ('active', 'pending_return', 'returned', 'cancelled')"
+    );
+    const [returnsData] = await safeQuery(connection,
+      "SELECT COUNT(*) as count FROM tbl_borrow WHERE status = 'returned'"
+    );
+    const [penaltyData] = await safeQuery(connection, 'SELECT IFNULL(SUM(penalty_fee), 0) as total FROM tbl_borrow');
+
+    // Category stats
+    const [categoryStats] = await safeQuery(connection, `
+      SELECT category, COUNT(*) as count
+      FROM tbl_product
+      WHERE category IS NOT NULL AND category != ''
+      GROUP BY category ORDER BY count DESC
+    `);
+
+    // Monthly borrows
+    const [monthlyBorrows] = await safeQuery(connection, `
+      SELECT
+        DATE_FORMAT(borrow_date, '%b %Y') as month,
+        COUNT(*) as borrows,
+        SUM(CASE WHEN status = 'returned' THEN 1 ELSE 0 END) as returns
+      FROM tbl_borrow
+      GROUP BY month ORDER BY borrow_date DESC LIMIT 12
+    `);
+
+    // Top borrowed assets
+    const [topBorrowed] = await safeQuery(connection, `
+      SELECT p.electotronixPN, p.img, COUNT(b.id) as borrows
+      FROM tbl_borrow b
+      JOIN tbl_product p ON b.product_id = p.ID
+      GROUP BY p.id, p.electotronixPN, p.img
+      ORDER BY borrows DESC LIMIT 10
+    `);
+
+    // Penalty by user
+    const [penaltyByUser] = await safeQuery(connection, `
+      SELECT u.name, IFNULL(SUM(b.penalty_fee), 0) as totalPenalty,
+             SUM(CASE WHEN b.status = 'returned' AND b.penalty_fee > 0 THEN 1 ELSE 0 END) as overdueCount
+      FROM tbl_borrow b
+      JOIN users u ON b.user_id = u._id
+      WHERE b.penalty_fee > 0
+      GROUP BY u._id, u.name
+      ORDER BY totalPenalty DESC LIMIT 10
+    `);
+
+    res.json({
+      summary: {
+        totalAssets: assetsData[0]?.[0]?.count || 0,
+        totalBorrows: borrowData[0]?.[0]?.count || 0,
+        totalReturns: returnsData[0]?.[0]?.count || 0,
+        totalPenalty: Number(penaltyData[0]?.[0]?.total || 0),
+      },
+      categoryStats: categoryStats[0] || [],
+      monthlyBorrows: monthlyBorrows[0] || [],
+      topBorrowed: topBorrowed[0] || [],
+      penaltyByUser: penaltyByUser[0] || [],
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+// Clean up any remaining text after the module.exports that would be invalid
 module.exports = {
   getAdminStats,
   getAllUsers,
@@ -330,5 +401,6 @@ module.exports = {
   getTransactionHistory,
   forceReturn,
   adjustCredit,
-  cleanupOldData
+  cleanupOldData,
+  getAdminReport
 };

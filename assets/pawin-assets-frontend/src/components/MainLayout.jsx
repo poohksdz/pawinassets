@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShieldCheck, LogOut, Bell, Search, CheckCircle2, History, LayoutGrid, Sun, Moon, Globe, Menu, X, CheckCheck, PackagePlus } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, LogOut, Bell, Search, CheckCircle2, History, LayoutGrid, Sun, Moon, Globe, Menu, X, CheckCheck, PackagePlus, User, BarChart3, Wrench, FileText, ClipboardList, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../middleware/axiosInstance';
 import axios from 'axios';
@@ -39,8 +39,14 @@ const translations = {
     admin: 'Admin',
     operator: 'Operator',
     coreSystems: 'Core Systems',
-    adminOverride: 'Admin Override',
-    createBarcode: 'Create Barcode'
+    myAccount: 'My Account',
+    adminTools: 'Admin Tools',
+    createBarcode: 'Create Barcode',
+    profile: 'Profile',
+    borrowReqs: 'Borrow Requests',
+    analytics: 'Analytics',
+    maintenance: 'Maintenance',
+    reports: 'Reports',
   },
   th: {
     assets: 'คลังอุปกรณ์',
@@ -54,8 +60,14 @@ const translations = {
     admin: 'ผู้ดูแลระบบ',
     operator: 'ผู้ปฏิบัติงาน',
     coreSystems: 'ระบบหลัก',
-    adminOverride: 'ส่วนควบคุมสำหรับแอดมิน',
-    createBarcode: 'สร้างบาร์โค้ด'
+    myAccount: 'บัญชี',
+    adminTools: 'เครื่องมือแอดมิน',
+    createBarcode: 'สร้างบาร์โค้ด',
+    profile: 'โปรไฟล์',
+    borrowReqs: 'คำขอยืม',
+    analytics: 'วิเคราะห์ข้อมูล',
+    maintenance: 'ซ่อมบำรุง',
+    reports: 'รายงาน',
   }
 };
 
@@ -233,10 +245,18 @@ export default function MainLayout({ children, title }) {
     { title: t.logs, path: '/history', icon: <History size={20} /> },
   ];
 
+  const accountItems = [
+    { title: t.profile, path: '/profile', icon: <User size={20} /> },
+    { title: t.borrowReqs, path: '/borrow-requests', icon: <ClipboardList size={20} /> },
+  ];
+
   const adminItems = [
     { title: t.approval, path: '/admin/approvals', icon: <ShieldCheck size={20} /> },
     { title: t.command, path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
     { title: t.createBarcode, path: '/admin/create-barcode', icon: <PackagePlus size={20} /> },
+    { title: t.analytics, path: '/analytics', icon: <BarChart3 size={20} /> },
+    { title: t.maintenance, path: '/maintenance', icon: <Wrench size={20} /> },
+    { title: t.reports, path: '/reports', icon: <FileText size={20} /> },
   ];
 
   return (
@@ -279,6 +299,7 @@ export default function MainLayout({ children, title }) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 custom-scrollbar">
+          {/* 🚀 Core Systems */}
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">{t.coreSystems}</p>
           {menuItems.map((item, idx) => {
             const isActive = location.pathname === item.path;
@@ -308,9 +329,40 @@ export default function MainLayout({ children, title }) {
             );
           })}
 
+          {/* 🚀 My Account Section */}
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 sm:mt-10 mb-4 px-2">{t.myAccount}</p>
+          {accountItems.map((item, idx) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <motion.div
+                key={item.path}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (menuItems.length + idx) * 0.1 }}
+              >
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-4 px-4 py-3 sm:py-3.5 rounded-2xl mb-2 font-bold transition-all duration-300 relative group overflow-hidden border ${isActive
+                    ? 'bg-orange-100 dark:bg-gradient-to-r dark:from-orange-500/20 dark:to-transparent text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/30 shadow-[inset_4px_0_0_rgba(249,115,22,1)] shadow-sm'
+                    : 'text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 border-transparent'
+                    }`}
+                >
+                  <motion.span
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    className="shrink-0"
+                  >
+                    {item.icon}
+                  </motion.span>
+                  <span className="text-sm tracking-wide">{item.title}</span>
+                </Link>
+              </motion.div>
+            );
+          })}
+
           {isAdmin && (
             <>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 sm:mt-10 mb-4 px-2">{t.adminOverride}</p>
+              {/* 🚀 Admin Tools Section */}
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 sm:mt-10 mb-4 px-2">{t.adminTools}</p>
               {adminItems.map((item, idx) => {
                 const isActive = location.pathname === item.path;
                 return (
@@ -318,7 +370,7 @@ export default function MainLayout({ children, title }) {
                     key={item.path}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (menuItems.length + idx) * 0.1 }}
+                    transition={{ delay: (menuItems.length + accountItems.length + idx) * 0.1 }}
                   >
                     <Link
                       to={item.path}

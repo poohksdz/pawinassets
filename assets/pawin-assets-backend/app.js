@@ -18,6 +18,8 @@ const borrowRoutes = require('./routes/borrowRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const maintenanceRoutes = require('./routes/maintenanceRoutes');
 
 const app = express();
 
@@ -72,6 +74,8 @@ app.use('/api/borrow', borrowRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 app.get('/api/ping', (req, res) => res.send('Backend Server is Ready! ✅'));
 

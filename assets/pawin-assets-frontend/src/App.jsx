@@ -8,6 +8,10 @@ import AdminApprovals from './pages/AdminApprovals';
 import AdminDashboard from './pages/AdminDashboard';
 import CreateBarcodeItem from './pages/CreateBarcodeItem';
 import BorrowRequests from './pages/BorrowRequests';
+import Profile from './pages/Profile';
+import Analytics from './pages/Analytics';
+import Maintenance from './pages/Maintenance';
+import Reports from './pages/Reports';
 import ProtectedRoute from './middleware/ProtectedRoute';
 import MainLayout from './components/MainLayout';
 
@@ -72,6 +76,8 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard cartItems={cartItems} setCartItems={setCartItems} />} />
           <Route path="/history" element={<History />} />
           <Route path="/borrow-requests" element={<BorrowRequests />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/maintenance" element={<Maintenance />} />
         </Route>
 
         {/* 🛡️ กลุ่มแอดมิน ที่ใช้ MainLayout ด้วย */}
@@ -79,6 +85,8 @@ export default function App() {
           <Route path="/admin/approvals" element={<AdminApprovals />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/create-barcode" element={<CreateBarcodeItem />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/reports" element={<Reports />} />
         </Route>
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
