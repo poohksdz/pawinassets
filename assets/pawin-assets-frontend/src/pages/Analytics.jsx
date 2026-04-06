@@ -108,10 +108,10 @@ export default function Analytics() {
 
         if (reportRes.status === 'fulfilled') {
           const report = reportRes.value.data;
-          if (report.categoryStats) setCategoryData(report.categoryStats);
-          if (report.monthlyBorrows) setMonthlyTrend(report.monthlyBorrows);
-          if (report.topBorrowed) setTopBorrowed(report.topBorrowed.slice(0, 5));
-          if (report.penaltyByUser) setPenaltyByUser(report.penaltyByUser.slice(0, 5));
+          if (Array.isArray(report.categoryStats)) setCategoryData(report.categoryStats);
+          if (Array.isArray(report.monthlyBorrows)) setMonthlyTrend(report.monthlyBorrows);
+          if (Array.isArray(report.topBorrowed)) setTopBorrowed(report.topBorrowed.slice(0, 5));
+          if (Array.isArray(report.penaltyByUser)) setPenaltyByUser(report.penaltyByUser.slice(0, 5));
           setUseFallback(false);
         } else {
           // Fallback: generate from basic stats
@@ -132,56 +132,63 @@ export default function Analytics() {
 
   // Generate fallback data
   const fallbackCategoryData = useMemo(() => {
-    if (!useFallback) return categoryData;
-    const fallback = [
-      { category: 'Monitors', count: 12, borrows: 45 },
-      { category: 'Laptops', count: 8, borrows: 62 },
-      { category: 'Keyboards', count: 20, borrows: 30 },
-      { category: 'Mice', count: 15, borrows: 28 },
-      { category: 'Cables', count: 35, borrows: 18 },
-      { category: 'Adapters', count: 10, borrows: 15 },
-    ];
-    return fallback;
+    if (useFallback) {
+      return [
+        { category: 'Monitors', count: 12, borrows: 45 },
+        { category: 'Laptops', count: 8, borrows: 62 },
+        { category: 'Keyboards', count: 20, borrows: 30 },
+        { category: 'Mice', count: 15, borrows: 28 },
+        { category: 'Cables', count: 35, borrows: 18 },
+        { category: 'Adapters', count: 10, borrows: 15 },
+      ];
+    }
+    return Array.isArray(categoryData) ? categoryData : [];
   }, [useFallback, categoryData]);
 
   const fallbackMonthlyTrend = useMemo(() => {
-    if (!useFallback) return monthlyTrend;
-    return [
-      { month: 0, borrows: 24, returns: 18 },
-      { month: 1, borrows: 32, returns: 28 },
-      { month: 2, borrows: 45, returns: 40 },
-      { month: 3, borrows: 38, returns: 35 },
-      { month: 4, borrows: 52, returns: 48 },
-      { month: 5, borrows: 61, returns: 55 },
-      { month: 6, borrows: 28, returns: 30 },
-      { month: 7, borrows: 42, returns: 38 },
-      { month: 8, borrows: 35, returns: 32 },
-      { month: 9, borrows: 55, returns: 50 },
-      { month: 10, borrows: 48, returns: 44 },
-      { month: 11, borrows: 30, returns: 25 },
-    ];
+    if (useFallback) {
+      return [
+        { month: 0, borrows: 24, returns: 18 },
+        { month: 1, borrows: 32, returns: 28 },
+        { month: 2, borrows: 45, returns: 40 },
+        { month: 3, borrows: 38, returns: 35 },
+        { month: 4, borrows: 52, returns: 48 },
+        { month: 5, borrows: 61, returns: 55 },
+        { month: 6, borrows: 28, returns: 30 },
+        { month: 7, borrows: 42, returns: 38 },
+        { month: 8, borrows: 35, returns: 32 },
+        { month: 9, borrows: 55, returns: 50 },
+        { month: 10, borrows: 48, returns: 44 },
+        { month: 11, borrows: 30, returns: 25 },
+      ];
+    }
+    return Array.isArray(monthlyTrend) ? monthlyTrend : [];
   }, [useFallback, monthlyTrend]);
 
   const fallbackTopBorrowed = useMemo(() => {
-    if (!useFallback) return topBorrowed;
-    return [
-      { electotronixPN: 'UltraWide Monitor 34"', borrows: 42, img: '' },
-      { electotronixPN: 'MacBook Pro 16"', borrows: 38, img: '' },
-      { electotronixPN: 'Mechanical Keyboard RGB', borrows: 31, img: '' },
-      { electotronixPN: 'USB-C Hub Multiport', borrows: 27, img: '' },
-      { electotronixPN: 'Wireless Mouse Ergo', borrows: 23, img: '' },
-    ];
+    if (useFallback) {
+      return [
+        { electotronixPN: 'UltraWide Monitor 34"', borrows: 42, img: '' },
+        { electotronixPN: 'MacBook Pro 16"', borrows: 38, img: '' },
+        { electotronixPN: 'Mechanical Keyboard RGB', borrows: 31, img: '' },
+        { electotronixPN: 'USB-C Hub Multiport', borrows: 27, img: '' },
+        { electotronixPN: 'Wireless Mouse Ergo', borrows: 23, img: '' },
+      ];
+    }
+    return Array.isArray(topBorrowed) ? topBorrowed : [];
   }, [useFallback, topBorrowed]);
 
   const fallbackPenaltyByUser = useMemo(() => {
-    if (!useFallback) return penaltyByUser;
-    return [
-      { name: 'Somchai K.', totalPenalty: 850, overdueCount: 3 },
-      { name: 'Niran P.', totalPenalty: 450, overdueCount: 2 },
-      { name: 'Kanya S.', totalPenalty: 300, overdueCount: 1 },
-      { name: 'Pichit W.', totalPenalty: 200, overdueCount: 1 },
-      { name: 'Mana J.', totalPenalty: 150, overdueCount: 1 },
-    ];
+    if (useFallback) {
+      return [
+        { name: 'Somchai K.', totalPenalty: 850, overdueCount: 3 },
+        { name: 'Niran P.', totalPenalty: 450, overdueCount: 2 },
+        { name: 'Kanya S.', totalPenalty: 300, overdueCount: 1 },
+        { name: 'Pichit W.', totalPenalty: 200, overdueCount: 1 },
+        { name: 'Mana J.', totalPenalty: 150, overdueCount: 1 },
+      ];
+    }
+    return Array.isArray(penaltyByUser) ? penaltyByUser : [];
   }, [useFallback, penaltyByUser]);
 
   if (loading) {
